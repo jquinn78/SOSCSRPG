@@ -1,19 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using Engine.Factories;
 using Engine.Models;
 
 namespace Engine.ViewModels
 {
-    public class GameSession
+    public class GameSession : INotifyPropertyChanged
     {
+
+        private Location _currentLocation;
         public Player CurrentPlayer { get; set; }
-        public Location CurrentLocation { get; set; }
+        public Location CurrentLocation
+        {
+            get
+            {
+                return _currentLocation;
+            }
 
-        public World CurrentWorld { get; set; }
+            set
+            {
+                _currentLocation = value;
 
+                OnPropertyChanged("CurrentLocation");
+                OnPropertyChanged("HasLocationToNorth");
+                OnPropertyChanged("HasLocationToEast");
+                OnPropertyChanged("HasLocationToWest");
+                OnPropertyChanged("HasLocationToSouth");
+            }
+        }
         
+        public World CurrentWorld { get; set; }
+        
+        public bool HasLocationToNorth
+        {
+            get
+            {
+                return CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate + 1) != null;
+            }
+        }
+
+        public bool HasLocationToEast
+        {
+            get
+            {
+                return CurrentWorld.LocationAt(CurrentLocation.XCoordinate + 1, CurrentLocation.YCoordinate) != null;
+            }
+        }
+
+        public bool HasLocationToSouth
+        {
+            get
+            {
+                return CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate - 1) != null;
+            }
+        }
+
+        public bool HasLocationToWest
+        {
+            get
+            {
+                return CurrentWorld.LocationAt(CurrentLocation.XCoordinate - 1, CurrentLocation.YCoordinate ) != null;
+            }
+        }
+
         public GameSession()
         {
             CurrentPlayer = new Player();
@@ -31,5 +82,37 @@ namespace Engine.ViewModels
 
 
         }
+
+        public void MoveNorth()
+        {
+            CurrentLocation = CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate + 1);
+        }
+
+        public void MoveWest()
+        {
+            CurrentLocation = CurrentWorld.LocationAt(CurrentLocation.XCoordinate - 1, CurrentLocation.YCoordinate);
+
+        }
+
+        public void MoveEast()
+        {
+            CurrentLocation = CurrentWorld.LocationAt(CurrentLocation.XCoordinate + 1, CurrentLocation.YCoordinate);
+
+        }
+
+        public void MoveSouth()
+        {
+            CurrentLocation = CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate - 1);
+
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        
     }
 }

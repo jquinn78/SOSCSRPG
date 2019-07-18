@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace Engine.Factories
 {
-    interal static class QuestFactory
+    internal static class QuestFactory
     {
-        private static readonly List<Quest> _quests = new List<Quest>;
+        private static readonly List<Quest> _quests = new List<Quest>();
 
         static QuestFactory()
         {

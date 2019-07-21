@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Text;
 using Engine.Factories;
 using Engine.Models;
+using System.Linq;
 
 namespace Engine.ViewModels
 {
@@ -12,6 +13,8 @@ namespace Engine.ViewModels
     {
 
         private Location _currentLocation;
+        private Monster _currentMonster;
+
         public Player CurrentPlayer { get; set; }
         public Location CurrentLocation
         {
@@ -29,6 +32,21 @@ namespace Engine.ViewModels
                 OnPropertyChanged(nameof(HasLocationToEast));
                 OnPropertyChanged(nameof(HasLocationToWest));
                 OnPropertyChanged(nameof(HasLocationToSouth));
+
+                GivePlayerQuestsAtLocation();
+                GetMonsterAtLocation();
+            }
+        }
+
+        public Monster CurrentMonster
+        {
+            get { return _currentMonster; }
+            set
+            {
+                _currentMonster = value;
+
+                OnPropertyChanged(nameof(CurrentMonster));
+                OnPropertyChanged(nameof(HasMonster));
             }
         }
         
@@ -118,6 +136,24 @@ namespace Engine.ViewModels
             {
                 CurrentLocation = CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate - 1);
             }
+        }
+
+        public bool HasMonster => CurrentMonster != null;
+
+        private void GivePlayerQuestsAtLocation()
+        {
+            foreach(Quest quest in CurrentLocation.QuestsAvailableHere)
+            {
+                if (!CurrentPlayer.Quests.Any(q => q.PlayerQuest.ID == quest.ID))
+                {
+                    CurrentPlayer.Quests.Add(new QuestStatus(quest));
+                }
+            }
+        }
+
+        private void GetMonsterAtLocation()
+        {
+            CurrentMonster = CurrentLocation.GetMonster();
         }
 
                 

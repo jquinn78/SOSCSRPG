@@ -4,7 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFUI"
+        xmlns:viewModels="clr-namespace:Engine.ViewModels;assembly=Engine"
+        d:DataContext="{d:DesignInstance viewModels:GameSession}"
         mc:Ignorable="d"
+        FontSize="11pt"
         Title="Josh's Awesome Game" Height="768" Width="1024">
 
     <Window.Resources>
@@ -22,8 +25,11 @@
             <ColumnDefinition Width="250"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-
+        
+        <!--Menu-->
         <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="Menu" Background="AliceBlue"></Label>
+        
+        <!--Player stats-->
         <Grid Grid.Row="1" Grid.Column="0" Background="Aquamarine">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -53,7 +59,8 @@
             <Label Grid.Row="5" Grid.Column="0" Content="Level:" />
             <Label Grid.Row="5" Grid.Column="1" Content="{Binding CurrentPlayer.Level}" />
         </Grid>
-
+        
+        <!--Gameplay-->
         <Grid Grid.Row="1" Grid.Column="1" Background="Beige">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -64,7 +71,8 @@
                 <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
-
+            
+            <!--Location information-->
             <Border Grid.Row="0" Grid.Column="1" BorderBrush="Gainsboro" BorderThickness="1">
                 <Grid Margin="3">
                     <Grid.RowDefinitions>
@@ -81,8 +89,32 @@
                 </Grid>
             </Border>
             
-        </Grid>
+            <!--Monster information-->
+            <Border Grid.Row="1" Grid.Column="1" BorderBrush="Gainsboro" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
+                    <TextBlock Grid.Row="0" HorizontalAlignment="Center" Height="Auto" Text="{Binding CurrentMonster.Name}" />
+
+                    <Image Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="125" Width="125" Source="{Binding CurrentMonster.ImageName}" />
+
+                    <StackPanel Grid.Row="2" Visibility="{Binding HasMonster, Converter={StaticResource BooleanToVisiblity}}" HorizontalAlignment="Center" Orientation="Horizontal">
+
+                        <TextBlock>Current Hitpoints:</TextBlock>
+                        <TextBlock Text="{Binding CurrentMonster.HitPoints}" />
+                    </StackPanel>
+
+
+                </Grid>
+            </Border>
+            
+        </Grid>
+        
+        <!--Inventory and Quests-->
         <Grid Grid.Row="2" Grid.Column="0" Background="BurlyWood">
             <TabControl>
                 <TabItem Header="Inventory">
@@ -93,9 +125,19 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>
+
+                <TabItem Header="Quests">
+                    <DataGrid ItemsSource="{Binding CurrentPlayer.Quests}" AutoGenerateColumns="False" HeadersVisibility="Column">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding PlayerQuest.Name}" Width="*" />
+                            <DataGridTextColumn Header="Done?" Binding="{Binding IsCompleted}" Width="Auto" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
             </TabControl>
         </Grid>
-
+        
+        <!--Action controls-->
         <Grid Grid.Row="2" Grid.Column="1" Background="Lavender">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
